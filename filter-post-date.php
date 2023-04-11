@@ -15,10 +15,13 @@ Copyright 2023 itsmeit.co (email: buivanloi.2010@gmail.com)
 class FilterPostByDate {
 
     function __construct() {
-        add_filter('months_dropdown_results', '__return_empty_array');
-        add_action('admin_enqueue_scripts', array($this, 'jqueryui'));
-        add_action('restrict_manage_posts', array($this, 'form'));
-        add_action('pre_get_posts', array($this, 'filterquery'));
+        global $pagenow;
+        if (is_admin() && in_array($pagenow, array('edit.php', 'upload.php', 'post.php', 'post-new.php'))) {
+            add_filter('months_dropdown_results', '__return_empty_array');
+            add_action('admin_enqueue_scripts', array($this, 'jqueryui'));
+            add_action('restrict_manage_posts', array($this, 'form'));
+            add_action('pre_get_posts', array($this, 'filterquery'));
+        }
     }
 
     function jqueryui() {
@@ -32,33 +35,33 @@ class FilterPostByDate {
         $to = (isset($_GET['itsmeitDateTo']) && $_GET['itsmeitDateTo']) ? $_GET['itsmeitDateTo'] : '';
 
         echo '<style>
-		input[name="itsmeitDateFrom"], input[name="itsmeitDateTo"]{
-			line-height: 28px;
-			height: 28px;
-			margin: 0;
-			width:125px;
-		}
-		</style>
-		
-		<input type="text" name="itsmeitDateFrom" placeholder="Date From" value="' . esc_attr($from) . '" />
-		<input type="text" name="itsmeitDateTo" placeholder="Date To" value="' . esc_attr($to) . '" />
-	
-		<script>
-		jQuery( function($) {
-			var from = $(\'input[name="itsmeitDateFrom"]\'),
-			    to = $(\'input[name="itsmeitDateTo"]\');
+        input[name="itsmeitDateFrom"], input[name="itsmeitDateTo"]{
+            line-height: 28px;
+            height: 28px;
+            margin: 0;
+            width:125px;
+        }
+        </style>
+        
+        <input type="text" name="itsmeitDateFrom" placeholder="Date From" value="' . esc_attr($from) . '" />
+        <input type="text" name="itsmeitDateTo" placeholder="Date To" value="' . esc_attr($to) . '" />
+    
+        <script>
+        jQuery( function($) {
+            var from = $(\'input[name="itsmeitDateFrom"]\'),
+                to = $(\'input[name="itsmeitDateTo"]\');
 
-			$( \'input[name="itsmeitDateFrom"], input[name="itsmeitDateTo"]\' ).datepicker( {dateFormat : "yy-mm-dd"} );
-    			from.on( \'change\', function() {
-				to.datepicker( \'option\', \'minDate\', from.val() );
-			});
-				
-			to.on( \'change\', function() {
-				from.datepicker( \'option\', \'maxDate\', to.val() );
-			});
-			
-		});
-		</script>';
+            $( \'input[name="itsmeitDateFrom"], input[name="itsmeitDateTo"]\' ).datepicker( {dateFormat : "yy-mm-dd"} );
+                from.on( \'change\', function() {
+                to.datepicker( \'option\', \'minDate\', from.val() );
+            });
+                
+            to.on( \'change\', function() {
+                from.datepicker( \'option\', \'maxDate\', to.val() );
+            });
+            
+        });
+        </script>';
 
     }
 
